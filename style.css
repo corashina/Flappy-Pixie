@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Fredoka+One');
+
+body {
+    font-family: 'Fredoka One', cursive;
+}
+
+canvas {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
