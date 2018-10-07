@@ -1,12 +1,11 @@
 
-import textures from './textures';
+import BACKGROUND from './background';
 import PLAYER from './player';
+import COLUMNS from './columns';
 
-const WIDTH = window.innerWidth, HEIHT = window.innerHeight;
-
-var renderer, scene, camera, time;
+var renderer, scene, camera, time, player;
+var columnList = [];
 var prevTime = performance.now();
-var player = new PLAYER(textures['flyingPixie'].tex);
 
 init();
 animate();
@@ -28,25 +27,19 @@ function init() {
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
   camera.position.set(0, 0, 1500)
 
-  var group = new THREE.Group();
-
-  var geometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight, 32);
-  var material = new THREE.MeshPhongMaterial({ map: textures['05_far_BG'].tex });
-  var plane = new THREE.Mesh(geometry, material);
-  group.add(plane);
-
-  addLayer({ name: '00_roof_leaves', depth: 3, width: WIDTH, height: 10, group, position: 'TOP' });
-  addLayer({ name: '02_front_canopy', depth: 2, width: WIDTH, height: 5, group, position: 'TOP' });
-  addLayer({ name: '03_rear_canopy', depth: 1, width: WIDTH, height: 3, group, position: 'TOP' });
-  addLayer({ name: '01_front_silhouette', depth: 2, width: WIDTH, height: 5, group, position: 'BOTTOM' })
-  addLayer({ name: '03_rear_silhouette', depth: 1, width: WIDTH, height: 3, group, position: 'BOTTOM' });
-  addLayer({ name: '02_tree_1', depth: 1, width: WIDTH / 4, height: 1, group, position: 'LEFT' });
-  addLayer({ name: '02_tree_2', depth: 1, width: WIDTH / 4, height: 1, group, position: 'RIGHT' });
-
-  scene.add(group);
-
-  spawnColumns();
+  // Player
+  player = new PLAYER();
   scene.add(player.mesh);
+
+  // Background
+  const template = new BACKGROUND();
+
+  [-2, -1, 0, 1, 2].forEach(i => {
+    var new_background = template.mesh.clone();
+    new_background.translateX(i * window.innerWidth);
+    scene.add(new_background)
+  })
+
 
 }
 
@@ -58,11 +51,28 @@ function animate() {
 function render() {
   time = performance.now();
 
-  camera.position.copy(player.mesh.position);
-  camera.position.z += 1000;
+  camera.position.x = player.mesh.position.x;
+  camera.position.z = window.innerWidth * 3;
   camera.target = player.mesh;
 
+  if (player.mesh.position.x == -window.innerWidth) {
+    console.log("XD")
+    columnList = columnList.filter(column => column.parent.userData != 0);
+    scene.children.forEach(child => child.userData == 0 ? scene.remove(child) : null);
+    let col = new COLUMNS({ position: 0 });
+    columnList = [...columnList, ...col.columns];
+    scene.add(col.mesh);
+  }
+  if (player.mesh.position.x == 0) {
+    columnList = columnList.filter(column => column.parent.userData != 1);
+    scene.children.forEach(child => child.userData == 1 ? scene.remove(child) : null);
+    let col = new COLUMNS({ position: 1 });
+    columnList = [...columnList, ...col.columns];
+    scene.add(col.mesh);
+  }
   player.update((time - prevTime) / 2000);
+
+  columnList.forEach(column => player.checkCollision(column));
 
   prevTime = time;
   renderer.render(scene, camera);
@@ -74,67 +84,13 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function onDocumentMouseMove(event) {
-  camera.position.x += ((event.clientX - window.innerWidth / 2) / 2 - camera.position.x) * .01;
-  camera.position.y += (-(event.clientY - window.innerHeight / 2) / 2 - camera.position.y) * .01;
-  camera.lookAt(scene.position);
-}
-
-function onKeyDown(event) {
-  switch (event.keyCode) {
-    case 32:
+function onMouseDown(event) {
+  switch (event.which) {
+    case 1:
       player.jump();
       break;
   }
 }
 
-function addLayer({ name, depth, width, height, group, position }) {
-  const layer = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, HEIHT / height, 32),
-    new THREE.MeshPhongMaterial({ transparent: true, map: textures[name].tex })
-  );
-  layer.translateZ(depth * 100);
-  switch (position) {
-    case 'TOP':
-      layer.translateY(HEIHT / 2 - HEIHT / (height * 2));
-      break
-    case 'BOTTOM':
-      layer.translateY(-HEIHT / 2 + HEIHT / (height * 2));
-      break;
-    case 'LEFT':
-      layer.translateX(-width);
-      break;
-    case 'RIGHT':
-      layer.translateX(width);
-      break;
-  }
-  group.add(layer);
-}
-
-function spawnColumns() {
-  const column1_height = Math.floor(Math.random() * 4) + 3;
-  const column2_height = 9 - column1_height;
-
-  const column1 = new THREE.Mesh(
-    new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column1_height, 32),
-    new THREE.MeshPhongMaterial({ transparent: true, map: textures['column'].tex })
-  );
-
-  const column2 = new THREE.Mesh(
-    new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column2_height, 32),
-    new THREE.MeshPhongMaterial({ transparent: true, map: textures['column'].tex })
-  );
-
-  column1.translateY(window.innerHeight / 2 - (window.innerHeight / 10 * column1_height) / 2);
-  column1.translateZ(200);
-
-  column2.translateY(-window.innerHeight / 2 + (window.innerHeight / 10 * column2_height) / 2);
-  column2.translateZ(200);
-
-  scene.add(column1);
-  scene.add(column2);
-}
-
-// window.addEventListener('mousemove', onDocumentMouseMove, false);
 window.addEventListener('resize', onWindowResize, false);
-window.addEventListener('keydown', onKeyDown, false);
+window.addEventListener('mousedown', onMouseDown, false);
