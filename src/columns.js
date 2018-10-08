@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import Textures from './textures';
 
 class Columns {
+=======
+import TEXTURES from './textures';
+
+class COLUMNS {
+>>>>>>> 28cdee8750daea129dfe229402f7e9166c3d4476
   constructor({ position }) {
 
     this.columns = [];
@@ -14,12 +20,20 @@ class Columns {
 
       let column1 = new THREE.Mesh(
         new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column1_height, 32),
+<<<<<<< HEAD
         new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'].tex })
+=======
+        new THREE.MeshPhongMaterial({ transparent: true, map: TEXTURES['column'].tex })
+>>>>>>> 28cdee8750daea129dfe229402f7e9166c3d4476
       );
 
       let column2 = new THREE.Mesh(
         new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column2_height, 32),
+<<<<<<< HEAD
         new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'].tex })
+=======
+        new THREE.MeshPhongMaterial({ transparent: true, map: TEXTURES['column'].tex })
+>>>>>>> 28cdee8750daea129dfe229402f7e9166c3d4476
       );
 
       column1.translateX(i * window.innerWidth / 5);
@@ -51,4 +65,8 @@ class Columns {
 }
 
 
+<<<<<<< HEAD
 export default Columns;
+=======
+export default COLUMNS;
+>>>>>>> 28cdee8750daea129dfe229402f7e9166c3d4476
