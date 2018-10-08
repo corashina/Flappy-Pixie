@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import Textures from './textures';
 
 class Columns {
-=======
-import TEXTURES from './textures';
-
-class COLUMNS {
->>>>>>> 28cdee8750daea129dfe229402f7e9166c3d4476
   constructor({ position }) {
 
     this.columns = [];
