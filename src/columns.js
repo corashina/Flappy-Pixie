@@ -16,12 +16,12 @@ Columns.prototype.constructor = function ({ position }) {
 
     let column1 = new THREE.Mesh(
       new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column1_height, 32),
-      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'].tex })
+      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
     );
 
     let column2 = new THREE.Mesh(
       new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column2_height, 32),
-      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'].tex })
+      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
     );
 
     column1.translateX(i * window.innerWidth / 5);

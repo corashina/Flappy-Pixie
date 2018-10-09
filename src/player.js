@@ -6,20 +6,23 @@ class Player {
 }
 
 Player.prototype.constructor = function () {
+
   this.score = 0;
+  this.mass = 3;
   this.velocity = new THREE.Vector3(3, 0, 0);
   this.mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(50, 50, 32),
-    new THREE.MeshPhongMaterial({ transparent: true, map: Textures['flyingPixie'].tex })
+    new THREE.MeshPhongMaterial({ transparent: true, map: Textures['flyingPixie'] })
   )
-  this.mesh.translateZ(251);
+  this.mesh.translateZ(255);
+
 }
 
 Player.prototype.update = function (delta) {
 
   this.box = new THREE.Box3().setFromObject(this.mesh);
 
-  this.velocity.y -= 9.81 * 5 * delta;
+  this.velocity.y -= 9.81 * this.mass * delta;
 
   this.mesh.position.y += this.velocity.y;
   this.mesh.position.x += this.velocity.x;
@@ -30,8 +33,10 @@ Player.prototype.update = function (delta) {
 }
 
 Player.prototype.jump = function () {
+
   this.velocity.y = 10;
   Sound.play('wing');
+
 }
 
 Player.prototype.checkCollision = function (column) {
@@ -60,12 +65,15 @@ Player.prototype.checkCollision = function (column) {
 }
 
 Player.prototype.hit = function () {
+
   this.velocity.x = 0;
   this.velocity.y = -1;
   Sound.play('hit');
+
 }
 
 Player.prototype.restart = function () {
+
   this.mesh.position.x = 5;
   this.mesh.position.y = 0;
 
@@ -73,6 +81,7 @@ Player.prototype.restart = function () {
 
   this.velocity.x = 3;
   this.velocity.y = 0;
+
 }
 
 export default Player;
