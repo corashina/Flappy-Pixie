@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Fredoka+One');
 
 body {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Fredoka One', sans-serif;
+    margin: 0;
 }
 
 canvas {
@@ -12,4 +13,27 @@ canvas {
     margin: 0px;
     left: 0;
     top: 0;
+}
+
+img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 164px;
+    height: 164px;
+    z-index: 1;
+}
+
+div {
+    position: absolute;
+    top: 0;
+    right: 1vw;
+    font-size: 5em;
+    color: #fff;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

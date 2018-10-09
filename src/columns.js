@@ -1,4 +1,4 @@
-import Textures from './textures';
+import { Textures, WIDTH, HEIGHT } from './textures';
 
 class Columns {
   constructor({ position }) { this.constructor({ position }) }
@@ -15,21 +15,21 @@ Columns.prototype.constructor = function ({ position }) {
     const column2_height = 8 - column1_height;
 
     let column1 = new THREE.Mesh(
-      new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column1_height, 32),
+      new THREE.PlaneGeometry(WIDTH / 20, HEIGHT / 10 * column1_height, 32),
       new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
     );
 
     let column2 = new THREE.Mesh(
-      new THREE.PlaneGeometry(window.innerWidth / 20, window.innerHeight / 10 * column2_height, 32),
+      new THREE.PlaneGeometry(WIDTH / 20, HEIGHT / 10 * column2_height, 32),
       new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
     );
 
-    column1.translateX(i * window.innerWidth / 5);
-    column1.translateY(window.innerHeight / 2 - (window.innerHeight / 10 * column1_height) / 2);
+    column1.translateX(i * WIDTH / 5);
+    column1.translateY(HEIGHT / 2 - (HEIGHT / 10 * column1_height) / 2);
     column1.translateZ(250);
 
-    column2.translateX(i * window.innerWidth / 5);
-    column2.translateY(-window.innerHeight / 2 + (window.innerHeight / 10 * column2_height) / 2);
+    column2.translateX(i * WIDTH / 5);
+    column2.translateY(-HEIGHT / 2 + (HEIGHT / 10 * column2_height) / 2);
     column2.translateZ(250);
 
     this.columns = [...this.columns, column1, column2];
@@ -40,14 +40,14 @@ Columns.prototype.constructor = function ({ position }) {
 
       [column1, column2].forEach(column => {
         let c = column.clone();
-        c.translateX(-2 * window.innerWidth)
+        c.translateX(-2 * WIDTH)
         group.add(c);
         this.columns = [...this.columns, c];
       })
 
     }
   }
-  group.translateX(position * window.innerWidth);
+  group.translateX(position * WIDTH);
   this.mesh = group;
 }
 

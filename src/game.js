@@ -1,7 +1,7 @@
 
 import Background from './background';
 import Columns from './columns';
-import Textures from './textures';
+import { Textures, WIDTH, HEIGHT } from './textures';
 import Player from './player';
 
 class Game { }
@@ -25,7 +25,7 @@ Game.prototype.init = function () {
 
   // Camera
   this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-  this.camera.position.set(0, 0, window.innerWidth * 3)
+  this.camera.position.set(0, 0, 1500)
 
   // Player
   this.player = new Player();
@@ -37,7 +37,7 @@ Game.prototype.init = function () {
   // Create background
   [-2, -1, 0, 1, 2].forEach(i => {
     const new_background = template.mesh.clone();
-    new_background.translateX(i * window.innerWidth);
+    new_background.translateX(i * WIDTH);
     this.scene.add(new_background);
   })
 
@@ -49,6 +49,7 @@ Game.prototype.init = function () {
 }
 
 Game.prototype.render = function () {
+
   this.camera.position.x = this.player.mesh.position.x;
 
   this.columnList.forEach(column => this.player.checkCollision(column));
