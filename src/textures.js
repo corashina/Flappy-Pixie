@@ -1,16 +1,16 @@
-import ASSETS from '../assets/WorldAssets.js';
+import Assets from '../assets/WorldAssets.js';
 
-const loader = new THREE.TextureLoader(), textures = {};
+const Loader = new THREE.TextureLoader();
+const Textures = {};
 
 require.context("../assets/", true, /\.(jpg|png)$/i).keys().forEach(file =>
 
-  textures[file.substring(2).replace(/\.[^/.]+$/, "")] = {
-    tex: loader.load(`./assets/${file.substring(2)}`),
-    width: ASSETS.frames[file.substring(2)] != null ? ASSETS.frames[file.substring(2)].frame.w : 0,
-    height: ASSETS.frames[file.substring(2)] != null ? ASSETS.frames[file.substring(2)].frame.h : 0
+  Textures[file.substring(2).replace(/\.[^/.]+$/, "")] = {
+    tex: Loader.load(`./assets/${file.substring(2)}`),
+    width: Assets.frames[file.substring(2)] != null ? Assets.frames[file.substring(2)].frame.w : 0,
+    height: Assets.frames[file.substring(2)] != null ? Assets.frames[file.substring(2)].frame.h : 0
   }
 
 )
 
-
-export default textures
+export default Textures
