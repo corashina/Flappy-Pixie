@@ -1,15 +1,21 @@
 
+import { Textures, WIDTH, HEIGHT } from './textures';
 import Background from './background';
 import Columns from './columns';
-import { Textures, WIDTH, HEIGHT } from './textures';
 import Player from './player';
 
 class Game { }
 
 Game.prototype.init = function () {
+
+  // Arrays
   this.columnList = [];
+  this.pickupList = [];
   this.animated = [];
 
+  // Utilities
+  this.raycaster = new THREE.Raycaster();
+  this.mouse = new THREE.Vector2();
   this.clock = new THREE.Clock();
 
   // Scene
@@ -25,10 +31,10 @@ Game.prototype.init = function () {
 
   // Camera
   this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-  this.camera.position.set(0, 0, 1500)
+  this.camera.position.set(0, 0, 1200)
 
   // Player
-  this.player = new Player();
+  this.player = new Player(this.scene);
   this.scene.add(this.player.mesh);
 
   // Create background template
@@ -45,14 +51,15 @@ Game.prototype.init = function () {
 
   // Events
   window.addEventListener('resize', (event) => this.onWindowResize(event), false);
-  window.addEventListener('mousedown', (event) => this.onKeyDown(event), false);
+  window.addEventListener('mousedown', (event) => this.onMouseDown(event), false);
 }
 
 Game.prototype.render = function () {
 
   this.camera.position.x = this.player.mesh.position.x;
 
-  this.columnList.forEach(column => this.player.checkCollision(column));
+  this.player.checkPickup(this.pickupList);
+  this.player.checkCollision(this.columnList);
 
   this.updateMap(0);
   this.updateMap(1);
@@ -70,9 +77,9 @@ Game.prototype.updateMap = function (position) {
     this.columnList = this.columnList.filter(column => column.parent.userData != position);
     this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
 
-    let col = new Columns({ position });
-    this.columnList = [...this.columnList, ...col.columns];
-    this.scene.add(col.mesh);
+    const columnArray = new Columns(position);
+    this.columnList = [...this.columnList, ...columnArray.columns];
+    this.scene.add(columnArray.mesh);
 
   }
 
@@ -95,14 +102,31 @@ Game.prototype.animate = function () {
 
 }
 
-Game.prototype.onKeyDown = function (event) {
+Game.prototype.onMouseDown = function (event) {
 
   switch (event.which) {
     case 1:
-      this.player.jump();
+      this.player.isAlive ? this.player.jump() : this.restart(event);
       break;
   }
 
+}
+
+Game.prototype.restart = function (event) {
+
+  this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+  this.mouse.y = - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+
+  this.raycaster.setFromCamera(this.mouse, this.camera);
+
+  const intersects = this.raycaster.intersectObjects([this.player.playButton], false);
+
+  if (intersects.length > 0) {
+
+    this.scene.remove(intersects[0].object)
+    this.player.restart();
+
+  }
 }
 
 Game.prototype.onWindowResize = function () {

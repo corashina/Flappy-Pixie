@@ -1,16 +1,17 @@
 import { Textures, WIDTH, HEIGHT } from './textures';
 
 class Columns {
-  constructor({ position }) { this.constructor({ position }) }
+  constructor(position) { this.constructor(position) }
 }
 
-Columns.prototype.constructor = function ({ position }) {
+Columns.prototype.constructor = function (position) {
   this.columns = [];
+  this.pickups = [];
 
-  let group = new THREE.Group();
+  const group = new THREE.Group();
   group.userData = position;
 
-  for (var i = -2; i <= 2; i++) {
+  [-2, -1, 0, 1, 2].forEach(i => {
     const column1_height = Math.floor(Math.random() * 4) + 3;
     const column2_height = 8 - column1_height;
 
@@ -26,11 +27,11 @@ Columns.prototype.constructor = function ({ position }) {
 
     column1.translateX(i * WIDTH / 5);
     column1.translateY(HEIGHT / 2 - (HEIGHT / 10 * column1_height) / 2);
-    column1.translateZ(250);
+    column1.translateZ(-50);
 
     column2.translateX(i * WIDTH / 5);
     column2.translateY(-HEIGHT / 2 + (HEIGHT / 10 * column2_height) / 2);
-    column2.translateZ(250);
+    column2.translateZ(-50);
 
     this.columns = [...this.columns, column1, column2];
 
@@ -46,7 +47,8 @@ Columns.prototype.constructor = function ({ position }) {
       })
 
     }
-  }
+  })
+
   group.translateX(position * WIDTH);
   this.mesh = group;
 }
