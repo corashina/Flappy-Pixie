@@ -12,15 +12,14 @@ Pickup.prototype.constructor = function () {
 
   const rnd = Math.floor(Math.random() * pickup_textures.length);
 
+  this.score = (rnd + 1) * 10;
   this.mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(WIDTH / 50, WIDTH / 50, 32),
-    new THREE.MeshBasicMaterial({
+    new THREE.PlaneGeometry(WIDTH / 100, WIDTH / 100, 32),
+    new THREE.MeshPhongMaterial({
       transparent: true,
       map: pickup_textures[rnd]
     })
   )
-  this.mesh.userData.isPickup = true;
-  this.mesh.userData.value = (rnd + 1);
 
 }
 

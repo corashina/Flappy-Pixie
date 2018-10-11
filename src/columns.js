@@ -1,66 +1,56 @@
 import { Textures, WIDTH, HEIGHT } from './textures';
-import Pickup from './pickup';
 
 class Columns {
   constructor(position) { this.constructor(position) }
 }
 
 Columns.prototype.constructor = function (position) {
-
+  this.columns = [];
   this.pickups = [];
 
-  this.mesh = new THREE.Group();
-  this.mesh.userData = position;
+  const group = new THREE.Group();
+  group.userData = position;
 
   [-2, -1, 0, 1, 2].forEach(i => {
+    const column1_height = Math.floor(Math.random() * 4) + 3;
+    const column2_height = 8 - column1_height;
 
-    this.column1_height = Math.floor(Math.random() * 4) + 3;
-    this.column2_height = 8 - this.column1_height;
+    let column1 = new THREE.Mesh(
+      new THREE.PlaneGeometry(WIDTH / 20, HEIGHT / 10 * column1_height, 32),
+      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
+    );
 
-    [this.column1_height, this.column2_height].forEach((columnHeight, bottom) => {
+    let column2 = new THREE.Mesh(
+      new THREE.PlaneGeometry(WIDTH / 20, HEIGHT / 10 * column2_height, 32),
+      new THREE.MeshPhongMaterial({ transparent: true, map: Textures['column'] })
+    );
 
-      this.column = new THREE.Mesh(
-        new THREE.PlaneGeometry(WIDTH / 20, HEIGHT / 10 * columnHeight, 32),
-        new THREE.MeshBasicMaterial({ transparent: true, map: Textures['column'] })
-      );
+    column1.translateX(i * WIDTH / 5);
+    column1.translateY(HEIGHT / 2 - (HEIGHT / 10 * column1_height) / 2);
+    column1.translateZ(-50);
 
-      this.side = bottom == 0 ? -1 : 1;
+    column2.translateX(i * WIDTH / 5);
+    column2.translateY(-HEIGHT / 2 + (HEIGHT / 10 * column2_height) / 2);
+    column2.translateZ(-50);
 
-      this.column.translateX(i * WIDTH / 5);
-      this.column.translateY(this.side * HEIGHT / 2 - this.side * HEIGHT / 10 * columnHeight / 2);
-      this.column.translateZ(-50);
+    this.columns = [...this.columns, column1, column2];
 
-      this.column.userData.isColumn = true;
+    [column1, column2].forEach(column => group.add(column))
 
-      this.mesh.add(this.column);
+    if (position == 1) {
 
-    })
+      [column1, column2].forEach(column => {
+        let c = column.clone();
+        c.translateX(-2 * WIDTH)
+        group.add(c);
+        this.columns = [...this.columns, c];
+      })
 
+    }
+  })
 
-
-    const pickup = new Pickup();
-    pickup.mesh.translateX(i * WIDTH / 5);
-    pickup.mesh.translateY(-HEIGHT / 2 + HEIGHT / 10 * (this.column1_height + 1));
-    pickup.mesh.translateZ(-50);
-
-    this.mesh.add(pickup.mesh);
-
-  });
-  if (position) this.mirror();
-  this.mesh.translateX(position * WIDTH);
-
-}
-
-Columns.prototype.mirror = function () {
-
-  this.mesh.children.forEach(column => {
-
-    this.mirroredColumn = column.clone();
-    this.mirroredColumn.translateX(-2 * WIDTH)
-    this.mesh.add(this.mirroredColumn);
-
-  });
-
+  group.translateX(position * WIDTH);
+  this.mesh = group;
 }
 
 export default Columns;
