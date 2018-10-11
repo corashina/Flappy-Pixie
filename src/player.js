@@ -16,7 +16,7 @@ Player.prototype.constructor = function (scene) {
   this.velocity = new THREE.Vector3(this.speed, 0, 0);
   this.mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(WIDTH / 50, WIDTH / 50, 32),
-    new THREE.MeshPhongMaterial({ transparent: true, map: Textures['flyingPixie'] })
+    new THREE.MeshBasicMaterial({ transparent: true, map: Textures['flyingPixie'] })
   )
   this.mesh.translateZ(255);
 
@@ -46,41 +46,48 @@ Player.prototype.jump = function () {
 
 }
 
-Player.prototype.checkCollision = function (columnList) {
+Player.prototype.checkCollision = function (objectList) {
 
-  const closest = columnList.reduce((accumulator, column) =>
+  const closest = objectList.reduce((accumulator, column) =>
     Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) < accumulator ?
       Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) : accumulator, Infinity)
 
-  columnList = columnList.filter(column => Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) == closest);
+  const closestObject = objectList.filter(object => Math.abs(new THREE.Box3().setFromObject(object).min.x - this.mesh.position.x) == closest);
 
-  columnList.forEach(column => {
+  closestObject.forEach(object => {
 
-    const column_box = new THREE.Box3().setFromObject(column);
+    const object_box = new THREE.Box3().setFromObject(object);
 
-    if (this.box.min.x < column_box.getSize(new THREE.Vector3()).x + column_box.min.x &&
-      this.box.min.x + this.box.getSize(new THREE.Vector3()).x > column_box.min.x && !column.passed) {
-      column.passed = true;
-      this.audio.play('swooshing');
+    if (object.userData.isColumn && !object.passed &&
+      this.box.min.x < object_box.getSize(new THREE.Vector3()).x + object_box.min.x &&
+      this.box.min.x + this.box.getSize(new THREE.Vector3()).x > object_box.min.x
+    ) {
+      object.passed = true;
       this.updateScore(this.score + 0.5);
     }
 
     if (this.velocity.x != 0) {
-      if (this.box.min.x < column_box.getSize(new THREE.Vector3()).x + column_box.min.x &&
-        this.box.min.x + this.box.getSize(new THREE.Vector3()).x > column_box.min.x &&
-        this.box.min.y < column_box.getSize(new THREE.Vector3()).y + column_box.min.y &&
-        this.box.min.y + this.box.getSize(new THREE.Vector3()).y > column_box.min.y) {
-        this.hit();
+      if (this.box.min.x < object_box.getSize(new THREE.Vector3()).x + object_box.min.x &&
+        this.box.min.x + this.box.getSize(new THREE.Vector3()).x > object_box.min.x &&
+        this.box.min.y < object_box.getSize(new THREE.Vector3()).y + object_box.min.y &&
+        this.box.min.y + this.box.getSize(new THREE.Vector3()).y > object_box.min.y) {
+
+        if (object.userData.isColumn) this.hit();
+        if (object.userData.isPickup) this.pickup(object, objectList);
+
       }
-      if (this.mesh.position.y > HEIGHT / 2 || this.mesh.position.y < -HEIGHT / 2) {
-        this.hit();
-      }
+      if (this.mesh.position.y > HEIGHT / 2 || this.mesh.position.y < -HEIGHT / 2) this.hit();
     }
   })
 
 }
 
-Player.prototype.checkPickup = function () {
+Player.prototype.pickup = function (object, objectList) {
+
+  this.audio.play('point');
+  this.updateScore(this.score + object.userData.value);
+  if (object.parent) object.parent.remove(object);
+  objectList = objectList.filter(obj => obj.uuid != object.uuid);
 
 }
 
@@ -93,7 +100,7 @@ Player.prototype.hit = function () {
   setTimeout(() => this.audio.play('die'), this.audio['hit'].duration * 1000);
   setTimeout(() => {
     const playButton = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(128, 128, 1),
+      new THREE.PlaneBufferGeometry(256, 256, 1),
       new THREE.MeshPhongMaterial({ transparent: true, map: Textures['playButton'] })
     );
     playButton.position.x = this.mesh.position.x;

@@ -18,7 +18,11 @@ module.exports = {
         presets: ["@babel/preset-env"]
       }
     },
-    ]
+    {
+      exclude: /audio/,
+      test: /\.png$/,
+      loader: 'url-loader?limit=100000'
+    }]
   },
   optimization: {
     minimizer: [new UglifyJsPlugin()]

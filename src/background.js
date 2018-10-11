@@ -41,7 +41,7 @@ Background.prototype.addLayer = function ({ name, depth, width, height, position
 
   const layer = new THREE.Mesh(
     new THREE.PlaneBufferGeometry(this.layerWidth, this.layerHeight, 1),
-    new THREE.MeshPhongMaterial({ transparent: true, map: Textures[name] })
+    new THREE.MeshBasicMaterial({ transparent: true, map: Textures[name] })
   );
 
   this.layer = layer;
