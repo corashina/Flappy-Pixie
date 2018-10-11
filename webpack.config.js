@@ -18,7 +18,10 @@ module.exports = {
         presets: ["@babel/preset-env"]
       }
     },
-    ]
+    {
+      test: /\.png$/,
+      loader: 'url-loader?limit=100000'
+    }]
   },
   optimization: {
     minimizer: [new UglifyJsPlugin()]

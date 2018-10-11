@@ -9,8 +9,7 @@ class Game { }
 Game.prototype.init = function () {
 
   // Arrays
-  this.columnList = [];
-  this.pickupList = [];
+  this.objectList = [];
   this.animated = [];
 
   // Utilities
@@ -58,11 +57,8 @@ Game.prototype.render = function () {
 
   this.camera.position.x = this.player.mesh.position.x;
 
-  this.player.checkPickup(this.pickupList);
-  this.player.checkCollision(this.columnList);
-
-  this.updateMap(0);
-  this.updateMap(1);
+  this.player.checkCollision(this.objectList);
+  this.updateMap();
 
   this.player.update(this.clock.getDelta());
   this.updateAnimations(this.clock.getElapsedTime());
@@ -70,18 +66,22 @@ Game.prototype.render = function () {
   this.renderer.render(this.scene, this.camera);
 }
 
-Game.prototype.updateMap = function (position) {
+Game.prototype.updateMap = function () {
 
-  if (this.player.mesh.position.x == (position - 1) * window.innerWidth) {
+  [0, 1].forEach(position => {
 
-    this.columnList = this.columnList.filter(column => column.parent.userData != position);
-    this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
+    if (this.player.mesh.position.x == (position - 1) * window.innerWidth) {
 
-    const columnArray = new Columns(position);
-    this.columnList = [...this.columnList, ...columnArray.columns];
-    this.scene.add(columnArray.mesh);
+      this.objectList = this.objectList.filter(column => column.parent.userData != position);
+      this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
 
-  }
+      const columnArray = new Columns(position);
+      this.objectList = [...this.objectList, ...columnArray.mesh.children];
+      this.scene.add(columnArray.mesh);
+
+    }
+
+  })
 
 }
 
