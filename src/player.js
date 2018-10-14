@@ -46,41 +46,40 @@ Player.prototype.jump = function () {
 
 }
 
-Player.prototype.checkCollision = function (columnList) {
+Player.prototype.checkCollision = function (objectList) {
 
-  const closest = columnList.reduce((accumulator, column) =>
-    Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) < accumulator ?
-      Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) : accumulator, Infinity)
+  const closest = objectList.reduce((accumulator, object) =>
+    Math.abs(new THREE.Box3().setFromObject(object).min.x - this.mesh.position.x) < accumulator ?
+      Math.abs(new THREE.Box3().setFromObject(object).min.x - this.mesh.position.x) : accumulator, Infinity)
 
-  columnList = columnList.filter(column => Math.abs(new THREE.Box3().setFromObject(column).min.x - this.mesh.position.x) == closest);
+  const closest_obj = objectList.filter(object => Math.abs(new THREE.Box3().setFromObject(object).min.x - this.mesh.position.x) == closest);
 
-  columnList.forEach(column => {
+  closest_obj.forEach(object => {
 
-    const column_box = new THREE.Box3().setFromObject(column);
+    const object_box = new THREE.Box3().setFromObject(object);
 
-    if (this.box.min.x < column_box.getSize(new THREE.Vector3()).x + column_box.min.x &&
-      this.box.min.x + this.box.getSize(new THREE.Vector3()).x > column_box.min.x && !column.passed) {
-      column.passed = true;
-      this.audio.play('swooshing');
-      this.updateScore(this.score + 0.5);
+    if (this.isAlive) {
+      if (this.box.min.x < object_box.getSize(new THREE.Vector3()).x + object_box.min.x &&
+        this.box.min.x + this.box.getSize(new THREE.Vector3()).x > object_box.min.x) {
+
+        if (object.userData.isPickup) {
+          this.audio.play('point');
+          this.updateScore(this.score + object.userData.value);
+          objectList = objectList.filter(e => e.uuid != object.uuid);
+          object.parent.remove(object);
+        } else if (object.userData.isColumn && !object.passed) {
+          object.passed = true;
+          this.audio.play('swooshing');
+          this.updateScore(this.score + 5);
+        } else if (this.box.min.y < object_box.getSize(new THREE.Vector3()).y + object_box.min.y &&
+          this.box.min.y + this.box.getSize(new THREE.Vector3()).y > object_box.min.y) {
+          this.hit();
+        }
+      }
+      if (this.mesh.position.y > HEIGHT / 2 || this.mesh.position.y < -HEIGHT / 2) this.hit();
     }
 
-    if (this.velocity.x != 0) {
-      if (this.box.min.x < column_box.getSize(new THREE.Vector3()).x + column_box.min.x &&
-        this.box.min.x + this.box.getSize(new THREE.Vector3()).x > column_box.min.x &&
-        this.box.min.y < column_box.getSize(new THREE.Vector3()).y + column_box.min.y &&
-        this.box.min.y + this.box.getSize(new THREE.Vector3()).y > column_box.min.y) {
-        this.hit();
-      }
-      if (this.mesh.position.y > HEIGHT / 2 || this.mesh.position.y < -HEIGHT / 2) {
-        this.hit();
-      }
-    }
   })
-
-}
-
-Player.prototype.checkPickup = function () {
 
 }
 
@@ -90,6 +89,7 @@ Player.prototype.hit = function () {
   this.velocity.x = 0;
   this.velocity.y = 10;
   this.audio.play('hit');
+
   setTimeout(() => this.audio.play('die'), this.audio['hit'].duration * 1000);
   setTimeout(() => {
     const playButton = new THREE.Mesh(
@@ -116,7 +116,7 @@ Player.prototype.restart = function () {
   this.velocity.y = 0;
 
   this.updateScore(0);
-
+  document.querySelector('.countdown').remove();
 }
 
 Player.prototype.updateScore = function (score) {

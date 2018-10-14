@@ -1,7 +1,7 @@
 
 import { Textures, WIDTH, HEIGHT } from './textures';
 import Background from './background';
-import Columns from './columns';
+import Collidable from './collidable';
 import Player from './player';
 
 class Game { }
@@ -34,23 +34,25 @@ Game.prototype.init = function () {
 
   // Player
   this.player = new Player(this.scene);
+
   this.scene.add(this.player.mesh);
 
   // Create background template
   const template = new Background();
 
   // Create background
-  [-2, -1, 0, 1, 2].forEach(i => {
+  [-1, 0, 1].forEach(i => {
     const new_background = template.mesh.clone();
     new_background.translateX(i * WIDTH);
     this.scene.add(new_background);
   })
 
-  this.scene.traverse(child => child.userData.animated ? this.animated.push(child) : null)
+  this.scene.traverse(child => child.userData.animated ? this.animated.push(child) : null);
 
   // Events
   window.addEventListener('resize', (event) => this.onWindowResize(event), false);
   window.addEventListener('mousedown', (event) => this.onMouseDown(event), false);
+  window.addEventListener('touchstart', (event) => this.onMouseDown(event), false);
 }
 
 Game.prototype.render = function () {
@@ -70,16 +72,7 @@ Game.prototype.updateMap = function () {
 
   [0, 1].forEach(position => {
 
-    if (this.player.mesh.position.x == (position - 1) * window.innerWidth) {
-
-      this.objectList = this.objectList.filter(column => column.parent.userData != position);
-      this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
-
-      const columnArray = new Columns(position);
-      this.objectList = [...this.objectList, ...columnArray.mesh.children];
-      this.scene.add(columnArray.mesh);
-
-    }
+    if (this.player.mesh.position.x == (position - 1) * window.innerWidth) this.updateCollidable(position);
 
   })
 
@@ -87,18 +80,38 @@ Game.prototype.updateMap = function () {
 
 Game.prototype.updateAnimations = function (delta) {
 
+  this.objectList.forEach((obj, i) => {
+    if (obj.userData.isPickup) {
+      if (i % 2 == 0) obj.position.y = Math.sin(delta) * 100;
+      else obj.position.y = Math.cos(delta) * 100;
+      obj.rotation.z -= 0.03;
+    }
+  });
+
   // Number 1-16
   delta = Math.floor(delta * 16) % 16 + 1;
 
   // Number 1-8 then 8-1 to make an animation loop instead of restarting it
   delta = delta > 8 ? 16 - delta : delta;
-  this.animated.forEach(texture => texture.material.map = Textures[`lava_slosh_0${delta}`])
+  this.animated.forEach(texture => texture.material.map = Textures[`lava_slosh_0${delta}`]);
 }
 
 Game.prototype.animate = function () {
 
   requestAnimationFrame(() => this.animate());
   this.render();
+
+}
+
+Game.prototype.updateCollidable = function (position) {
+
+  const objGroup = new Collidable(position);
+
+  this.objectList = this.objectList.filter(obj => obj.parent ? obj.parent.userData != position : null);
+  this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
+
+  this.objectList = [...this.objectList, ...objGroup.mesh.children];
+  this.scene.add(objGroup.mesh);
 
 }
 
@@ -123,8 +136,18 @@ Game.prototype.restart = function (event) {
 
   if (intersects.length > 0) {
 
-    this.scene.remove(intersects[0].object)
-    this.player.restart();
+    this.objectList.forEach(obj => this.scene.remove(obj.parent));
+    this.objectList = [];
+    this.scene.remove(intersects[0].object);
+
+    const countdown = document.createElement('div');
+    countdown.textContent = '3';
+    countdown.classList = 'countdown';
+    document.body.append(countdown);
+
+    setTimeout(() => countdown.textContent = '2', 1000);
+    setTimeout(() => countdown.textContent = '1', 2000);
+    setTimeout(() => this.player.restart(), 3000);
 
   }
 }
