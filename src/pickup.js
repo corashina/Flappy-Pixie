@@ -15,11 +15,8 @@ Pickup.prototype.constructor = function (position, group) {
   this.group = group;
 
   this.mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(WIDTH / 50, WIDTH / 50, 32),
-    new THREE.MeshBasicMaterial({
-      transparent: true,
-      map: pickup_textures[random]
-    })
+    new THREE.PlaneBufferGeometry(WIDTH / 50, WIDTH / 50, 32),
+    new THREE.MeshBasicMaterial({ transparent: true, map: pickup_textures[random] })
   )
 
   this.mesh.userData.isPickup = true;

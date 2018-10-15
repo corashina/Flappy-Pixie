@@ -82,8 +82,7 @@ Game.prototype.updateAnimations = function (delta) {
 
   this.objectList.forEach((obj, i) => {
     if (obj.userData.isPickup) {
-      if (i % 2 == 0) obj.position.y = Math.sin(delta) * 100;
-      else obj.position.y = Math.cos(delta) * 100;
+      obj.position.y = i % 2 == 0 ? Math.sin(delta) * 100 : Math.cos(delta) * 100;
       obj.rotation.z -= 0.03;
     }
   });
@@ -141,10 +140,10 @@ Game.prototype.restart = function (event) {
     this.scene.remove(intersects[0].object);
 
     const countdown = document.createElement('div');
-    countdown.textContent = '3';
     countdown.classList = 'countdown';
     document.body.append(countdown);
 
+    setTimeout(() => countdown.textContent = '3', 0);
     setTimeout(() => countdown.textContent = '2', 1000);
     setTimeout(() => countdown.textContent = '1', 2000);
     setTimeout(() => this.player.restart(), 3000);

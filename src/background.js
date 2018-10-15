@@ -7,6 +7,7 @@ class Background {
 Background.prototype.constructor = function () {
 
   this.mesh = new THREE.Group();
+
   this.addLayer({ name: '05_far_BG', depth: 5 });
 
   // Add top leaves
@@ -40,8 +41,8 @@ Background.prototype.addLayer = function ({ name, depth, width, height, position
   this.layerHeight = height ? HEIGHT / height : HEIGHT;
 
   const layer = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(this.layerWidth, this.layerHeight, 1),
-    new THREE.MeshPhongMaterial({ transparent: true, map: Textures[name] })
+    new THREE.PlaneGeometry(this.layerWidth, this.layerHeight),
+    new THREE.MeshBasicMaterial({ transparent: true, map: Textures[name] })
   );
 
   this.layer = layer;
@@ -53,7 +54,7 @@ Background.prototype.addLayer = function ({ name, depth, width, height, position
   name.includes('lava') ? this.addAnimation() : null;
   name.includes('flower') ? this.addFlowers() : null;
 
-  this.layerStore.forEach(layer => this.mesh.add(layer))
+  this.layerStore.forEach(layer => this.mesh.add(layer));
 
 }
 
@@ -74,13 +75,15 @@ Background.prototype.addAnimation = function () {
 }
 
 Background.prototype.addFlowers = function () {
-  [-2, -1, 0, 1, 2].forEach(i => {
+
+  [-1.5, 0, 1.5].forEach(i => {
     const flower = this.layer.clone();
     flower.translateX(i * WIDTH / 5 + (this.layerName[this.layerName.length - 1]) * this.layerWidth * 5);
     flower.translateY(Math.floor(Math.random() * 5) * this.layerHeight / 5);
     flower.translateZ(-Math.floor(Math.random() * 5) * this.depth * 10);
     this.layerStore.push(flower);
-  })
+  });
+
   this.layerStore.forEach(layer => layer.translateY(-this.layerHeight / 4))
 }
 
