@@ -1,5 +1,5 @@
 
-import { Textures, WIDTH, HEIGHT } from './textures';
+import { Textures, WIDTH } from './textures';
 import Background from './background';
 import Collidable from './collidable';
 import Player from './player';
@@ -38,11 +38,12 @@ Game.prototype.init = function () {
   this.scene.add(this.player.mesh);
 
   // Create background template
-  const template = new Background();
+  let template = new Background();
 
   // Create background
-  [-1, 0, 1].forEach(i => {
-    const new_background = template.mesh.clone();
+  let backround_tiles = window.innerWidth < 768 ? [-1, 0, 2] : [-2, -1, 0, 1, 2];
+  backround_tiles.forEach(i => {
+    let new_background = template.mesh.clone();
     new_background.translateX(i * WIDTH);
     this.scene.add(new_background);
   })
@@ -57,6 +58,7 @@ Game.prototype.init = function () {
 
 Game.prototype.render = function () {
 
+  // Camera follow player
   this.camera.position.x = this.player.mesh.position.x;
 
   this.player.checkCollision(this.objectList);
@@ -70,9 +72,16 @@ Game.prototype.render = function () {
 
 Game.prototype.updateMap = function () {
 
+
+  // If we are at position 0 generate columns and pickups at position 1
+  // If we are at position 1 generate collidables at position 0 and move us to position -1
+  // -1 -> 0 -> 1 -> -1 -> 0 -> 1 ... 
   [0, 1].forEach(position => {
 
-    if (this.player.mesh.position.x == (position - 1) * window.innerWidth) this.updateCollidable(position);
+    let p = (position - 1) * window.innerWidth;
+    if (this.player.mesh.position.x == p ||
+      this.player.mesh.position.x == p + 1 ||
+      this.player.mesh.position.x == p - 1) this.updateCollidable(position);
 
   })
 
@@ -80,18 +89,16 @@ Game.prototype.updateMap = function () {
 
 Game.prototype.updateAnimations = function (delta) {
 
-  this.objectList.forEach((obj, i) => {
-    if (obj.userData.isPickup) {
-      obj.position.y = i % 2 == 0 ? Math.sin(delta) * 100 : Math.cos(delta) * 100;
-      obj.rotation.z -= 0.03;
-    }
-  });
+  this.objectList.forEach((obj, i) => obj.userData.isPickup ? this.pickupAnimations(obj, i, delta) : null);
 
   // Number 1-16
   delta = Math.floor(delta * 16) % 16 + 1;
 
   // Number 1-8 then 8-1 to make an animation loop instead of restarting it
+  // [1,2,3,4,5,6,7,8,7,6,5,4,3,2,1,2,3,4,5,6,7,8,7...]
   delta = delta > 8 ? 16 - delta : delta;
+
+  // Change lava texture to the next one
   this.animated.forEach(texture => texture.material.map = Textures[`lava_slosh_0${delta}`]);
 }
 
@@ -102,13 +109,23 @@ Game.prototype.animate = function () {
 
 }
 
+Game.prototype.pickupAnimations = function (obj, i, delta) {
+
+  obj.position.y = i % 2 == 0 ? Math.sin(delta) * 100 : Math.cos(delta) * 100;
+  obj.rotation.z -= 0.03;
+
+}
+
 Game.prototype.updateCollidable = function (position) {
 
-  const objGroup = new Collidable(position);
+  // Create new columns and pickups when at position 0 / 1
+  let objGroup = new Collidable(position);
 
+  // Delete previous ones
   this.objectList = this.objectList.filter(obj => obj.parent ? obj.parent.userData != position : null);
   this.scene.children.forEach(child => child.userData == position ? this.scene.remove(child) : null);
 
+  // Add new
   this.objectList = [...this.objectList, ...objGroup.mesh.children];
   this.scene.add(objGroup.mesh);
 
@@ -131,17 +148,20 @@ Game.prototype.restart = function (event) {
 
   this.raycaster.setFromCamera(this.mouse, this.camera);
 
-  const intersects = this.raycaster.intersectObjects([this.player.playButton], false);
+  let intersects = this.raycaster.intersectObjects([this.player.playButton], false);
 
-  if (intersects.length > 0) {
+  if (intersects[0].object.userData.restart) {
 
+    intersects[0].object.userData.restart = false;
     this.objectList.forEach(obj => this.scene.remove(obj.parent));
     this.objectList = [];
     this.scene.remove(intersects[0].object);
 
-    const countdown = document.createElement('div');
+    let countdown = document.createElement('div');
     countdown.classList = 'countdown';
     document.body.append(countdown);
+
+    this.scene.remove(this.player.playButton);
 
     setTimeout(() => countdown.textContent = '3', 0);
     setTimeout(() => countdown.textContent = '2', 1000);

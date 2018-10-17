@@ -1,16 +1,15 @@
 import { Textures, WIDTH, HEIGHT } from './textures';
 
-class Pickup {
-  constructor(position, group) { this.constructor(position, group) }
-}
+class Pickup { constructor(position, group) { this.constructor(position, group) } }
 
+// Add all pickup textures to an array
 const pickup_textures = Object.keys(Textures)
   .filter(key => key.includes('pickup_'))
   .reduce((accumulator, key) => accumulator.concat(Textures[key]), []);
 
 Pickup.prototype.constructor = function (position, group) {
 
-  const random = Math.floor(Math.random() * pickup_textures.length);
+  let random = Math.floor(Math.random() * pickup_textures.length);
 
   this.group = group;
 
