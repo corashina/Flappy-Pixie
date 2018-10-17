@@ -80,12 +80,13 @@ Player.prototype.checkCollision = function (objectList) {
         } else if (this.box.min.y < object_box.getSize(new THREE.Vector3()).y + object_box.min.y &&
           this.box.min.y + this.box.getSize(new THREE.Vector3()).y > object_box.min.y) {
 
-          if (object.userData.isColumn) this.hit();
-          else if (object.userData.isPickup) this.pickup(object, objectList);
+          // if (object.userData.isColumn) this.hit();
+          if (object.userData.isPickup) this.pickup(object, objectList);
         }
 
         // Upper and lower boundaries
-      } else if (this.mesh.position.y > HEIGHT / 2 || this.mesh.position.y < -HEIGHT / 2) this.hit();
+      } else if (this.mesh.position.y > HEIGHT / 2 - HEIGHT / 10 ||
+        this.mesh.position.y < -HEIGHT / 2 + HEIGHT / 10) this.hit();
     }
 
   })
@@ -96,6 +97,8 @@ Player.prototype.pickup = function (object, objectList) {
 
   this.audio.play('point');
   this.updateScore(this.score + object.userData.value);
+  object.userData.value = 0;
+
   objectList = objectList.filter(e => e.uuid != object.uuid);
 
   // Remove mirrored pickups

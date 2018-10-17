@@ -41,7 +41,7 @@ Game.prototype.init = function () {
   let template = new Background();
 
   // Create background
-  let backround_tiles = window.innerWidth < 768 ? [-1, 0, 2] : [-2, -1, 0, 1, 2];
+  let backround_tiles = window.innerWidth < 768 ? [-1, 0, 1] : [-2, -1, 0, 1, 2];
   backround_tiles.forEach(i => {
     let new_background = template.mesh.clone();
     new_background.translateX(i * WIDTH);
@@ -78,6 +78,8 @@ Game.prototype.updateMap = function () {
   // -1 -> 0 -> 1 -> -1 -> 0 -> 1 ... 
   [0, 1].forEach(position => {
 
+    // Poor solution to check at which tile the player is
+    // We check 3 conditions because player speed is 3 and window.innerWidth % 3 might vary
     let p = (position - 1) * window.innerWidth;
     if (this.player.mesh.position.x == p ||
       this.player.mesh.position.x == p + 1 ||
