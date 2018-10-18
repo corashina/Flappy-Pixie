@@ -52,7 +52,8 @@ Game.prototype.init = function () {
 
   // Events
   window.addEventListener('resize', (event) => this.onWindowResize(event), false);
-  window.addEventListener('mousedown', (event) => this.onMouseDown(event), false);
+  window.addEventListener('mousedown', (event) => this.onClick(event), false);
+  window.addEventListener('touchstart', (event) => this.onClick(event), false)
 }
 
 Game.prototype.render = function () {
@@ -132,9 +133,9 @@ Game.prototype.updateCollidable = function (position) {
 
 }
 
-Game.prototype.onMouseDown = function (event) {
-
+Game.prototype.onClick = function (event) {
   switch (event.which) {
+    case 0:
     case 1:
       this.player.isAlive ? this.player.jump() : this.restart(event);
       break;
