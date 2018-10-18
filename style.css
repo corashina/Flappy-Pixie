@@ -10,6 +10,11 @@ body {
     background: #fefefe;
     margin: 0;
     color: var(--walter-white);
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 canvas {
@@ -23,38 +28,16 @@ canvas {
     margin: 0px;
 }
 
-img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 164px;
-    height: 164px;
-    z-index: 1;
-}
-
 .score {
     position: absolute;
-    top: 0;
-    right: 2vw;
-    font-size: 5em;
+    top: 2%;
+    right: 2%;
+    font-size: 2em;
     user-select: none;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
 }
 
 .highest {
-    position: absolute;
-    top: 0;
-    left: 2vw;
-    font-size: 5em;
-    user-select: none;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
+    left: 2%;
 }
 
 .countdown {
@@ -62,12 +45,8 @@ img {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 5em;
+    font-size: 3em;
     user-select: none;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
     animation: count 1s 3 ease-in-out;
 }
 
@@ -77,13 +56,7 @@ img {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 5em;
-    user-select: none;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
 }
-
 
 @keyframes count {
     0% {

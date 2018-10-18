@@ -53,7 +53,6 @@ Game.prototype.init = function () {
   // Events
   window.addEventListener('resize', (event) => this.onWindowResize(event), false);
   window.addEventListener('mousedown', (event) => this.onMouseDown(event), false);
-  window.addEventListener('touchstart', (event) => this.onMouseDown(event), false);
 }
 
 Game.prototype.render = function () {
