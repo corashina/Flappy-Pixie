@@ -18,22 +18,21 @@ body {
 }
 
 canvas {
-    visibility: hidden;
     position: absolute;
+    visibility: hidden;
+    display: block;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
     left: 0;
     top: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin: 0px;
 }
 
 .score {
     position: absolute;
-    top: 2%;
-    right: 2%;
     font-size: 2em;
-    user-select: none;
+    right: 2%;
+    top: 2%;
 }
 
 .highest {
@@ -41,21 +40,21 @@ canvas {
 }
 
 .countdown {
+    font-size: 3em;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3em;
-    user-select: none;
     animation: count 1s 3 ease-in-out;
 }
 
 .game-over {
+    font-size: 5em;
+    text-align: center;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 5em;
 }
 
 @keyframes count {

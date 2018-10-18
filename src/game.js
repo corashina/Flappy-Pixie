@@ -151,7 +151,7 @@ Game.prototype.restart = function (event) {
 
   let intersects = this.raycaster.intersectObjects([this.player.restartButton], false);
 
-  if (intersects[0].object.userData.restart) {
+  if (intersects[0] && intersects[0].object.userData.restart) {
 
     intersects[0].object.userData.restart = false;
     this.objectList.forEach(obj => this.scene.remove(obj.parent));
