@@ -155,7 +155,11 @@ Player.prototype.addRestartButton = function () {
 
 Player.prototype.restart = function () {
 
-  this.objectList.forEach(obj => this.scene.remove(obj.parent));
+  this.objectList.forEach(obj => {
+    // If an object is a group you cant remove it directly
+    this.scene.remove(obj.parent);
+    if (obj.parent) obj.parent.remove(this.scene.remove(obj))
+  });
   this.objectList = [];
 
   let countdown = document.createElement('div');

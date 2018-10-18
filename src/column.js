@@ -12,7 +12,7 @@ Column.prototype.constructor = function (position, group) {
   this.group = group;
 
   // Second column height is determined by first
-  // Divide height into 10 sectors
+  // Divide height into ${split} sectors
   // First column max height is 3-7, then we leave 2 height between columns (10 - 2)
   this.column1_height = Math.floor(Math.random() * (max_height - min_height)) + min_height;
   this.column2_height = split - distance_between_columns - this.column1_height;
