@@ -80,10 +80,10 @@ Game.prototype.updateMap = function () {
 
     // Poor solution to check at which tile the player is
     // We check 3 conditions because player speed is 3 and window.innerWidth % 3 might vary
-    let p = (position - 1) * window.innerWidth;
-    if (this.player.mesh.position.x == p ||
-      this.player.mesh.position.x == p + 1 ||
-      this.player.mesh.position.x == p - 1) this.updateCollidable(position);
+    let tile = (position - 1) * window.innerWidth;
+    if (this.player.mesh.position.x == tile ||
+      this.player.mesh.position.x == tile + 1 ||
+      this.player.mesh.position.x == tile - 1) this.updateCollidable(position);
 
   })
 
@@ -150,7 +150,7 @@ Game.prototype.restart = function (event) {
 
   this.raycaster.setFromCamera(this.mouse, this.camera);
 
-  let intersects = this.raycaster.intersectObjects([this.player.playButton], false);
+  let intersects = this.raycaster.intersectObjects([this.player.restartButton], false);
 
   if (intersects[0].object.userData.restart) {
 
@@ -168,7 +168,7 @@ Game.prototype.restart = function (event) {
     setTimeout(() => countdown.textContent = '3', 0);
     setTimeout(() => countdown.textContent = '2', 1000);
     setTimeout(() => countdown.textContent = '1', 2000);
-    setTimeout(() => this.player.restart(), 3000);
+    setTimeout(() => this.player.reset(), 3000);
 
   }
 }

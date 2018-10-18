@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Fredoka+One');
 
+:root {
+    --walter-white: #d8d8d8;
+    --blueish: rgb(39, 204, 255);
+}
+
 body {
     font-family: 'Fredoka One', sans-serif;
+    background: #fefefe;
     margin: 0;
+    color: var(--walter-white);
 }
 
 canvas {
@@ -29,9 +36,20 @@ img {
 .score {
     position: absolute;
     top: 0;
-    right: 1vw;
+    right: 2vw;
     font-size: 5em;
-    color: #fff;
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.highest {
+    position: absolute;
+    top: 0;
+    left: 2vw;
+    font-size: 5em;
     user-select: none;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
@@ -45,7 +63,6 @@ img {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 5em;
-    color: #fff;
     user-select: none;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
@@ -53,6 +70,20 @@ img {
     -ms-user-select: none;
     animation: count 1s 3 ease-in-out;
 }
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5em;
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
 
 @keyframes count {
     0% {
@@ -86,7 +117,7 @@ img {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgb(39, 204, 255);
+    background: var(--blueish);
     margin: -3px 0 0 -3px;
 }
 

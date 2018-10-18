@@ -6,6 +6,7 @@ class Player { constructor(scene) { this.constructor(scene) } }
 Player.prototype.constructor = function (scene) {
 
   this.score = 0;
+  this.highestScore = 0;
   this.mass = 3;
   this.speed = 3;
   this.audio = Sound;
@@ -20,7 +21,7 @@ Player.prototype.constructor = function (scene) {
   this.mesh.translateZ(255);
 
   // On first run add info about collectibles value
-  this.addRestartButton({ info: true });
+  this.addInfoButton();
 
 }
 
@@ -80,8 +81,8 @@ Player.prototype.checkCollision = function (objectList) {
         } else if (this.box.min.y < object_box.getSize(new THREE.Vector3()).y + object_box.min.y &&
           this.box.min.y + this.box.getSize(new THREE.Vector3()).y > object_box.min.y) {
 
-          // if (object.userData.isColumn) this.hit();
-          if (object.userData.isPickup) this.pickup(object, objectList);
+          if (object.userData.isColumn) this.hit();
+          else if (object.userData.isPickup) this.pickup(object, objectList);
         }
 
         // Upper and lower boundaries
@@ -125,32 +126,47 @@ Player.prototype.hit = function () {
   this.velocity.y = 10;
   this.audio.play('hit');
 
+  let game_over = document.createElement('div');
+  game_over.classList = 'game-over';
+  game_over.textContent = 'Game over';
+  document.body.append(game_over);
+  if (this.score > this.highestScore) this.updateHighestscore()
+
   setTimeout(() => this.audio.play('die'), this.audio['hit'].duration * 1000);
-  setTimeout(() => this.addRestartButton({ info: false }), (this.audio['die'].duration + this.audio['hit'].duration) * 1000);
+  setTimeout(() => this.addRestartButton(), (this.audio['die'].duration + this.audio['hit'].duration) * 1000);
 
 }
 
-Player.prototype.addRestartButton = function ({ info }) {
+Player.prototype.addRestartButton = function () {
 
-  let playButton;
-
-  if (info) playButton = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(WIDTH / 2, HEIGHT / 2, 1),
-    new THREE.MeshBasicMaterial({ transparent: true, map: Textures['points'] }))
-  else playButton = new THREE.Mesh(
+  let restartButton = new THREE.Mesh(
     new THREE.PlaneBufferGeometry(128, 128, 1),
     new THREE.MeshBasicMaterial({ transparent: true, map: Textures['playButton'] })
   );
 
-  this.playButton = playButton;
-  this.playButton.position.x = this.mesh.position.x;
-  this.playButton.userData.restart = true;
-  this.scene.add(playButton);
+  this.restartButton = restartButton;
+  this.restartButton.position.x = this.mesh.position.x;
+  this.restartButton.userData.restart = true;
+  this.scene.add(this.restartButton);
+  document.querySelector('.game-over').remove();
 
 }
 
+Player.prototype.addInfoButton = function () {
 
-Player.prototype.restart = function () {
+  let restartButton = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(window.innerWidth < 768 ? window.innerWidth : WIDTH / 2, HEIGHT / 2, 1),
+    new THREE.MeshBasicMaterial({ transparent: true, map: Textures['points'] })
+  );
+
+  this.restartButton = restartButton;
+  this.restartButton.position.x = this.mesh.position.x;
+  this.restartButton.userData.restart = true;
+  this.scene.add(this.restartButton);
+
+}
+
+Player.prototype.reset = function () {
 
   this.isAlive = true;
 
@@ -171,7 +187,14 @@ Player.prototype.restart = function () {
 Player.prototype.updateScore = function (score) {
 
   this.score = score;
-  document.querySelector('.score').textContent = this.score;
+  document.querySelector('.score').textContent = `Score: ${this.score}`;
+
+}
+
+Player.prototype.updateHighestscore = function () {
+
+  this.highestScore = this.score;
+  document.querySelector('.highest').textContent = `Highest: ${this.score}`;
 
 }
 
