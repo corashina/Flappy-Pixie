@@ -51,9 +51,14 @@ Game.prototype.init = function () {
   this.scene.traverse(child => child.userData.animated ? this.animated.push(child) : null);
 
   // Events
-  window.addEventListener('resize', (event) => this.onWindowResize(event), false);
-  window.addEventListener('mousedown', (event) => this.onClick(event), false);
-  window.addEventListener('touchstart', (event) => this.onClick(event), false)
+  const defaultEvent = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
+  window.addEventListener(defaultEvent, (e) => this.onClick(e), false);
+  window.addEventListener('resize', (e) => this.onWindowResize(e), false);
+  document.querySelector('.infoBtn').addEventListener(defaultEvent, (e) => {
+    document.querySelector('.info').style.visibility =
+      document.querySelector('.info').style.visibility == 'visible' ?
+        'hidden' : 'visible';
+  }, false)
 }
 
 Game.prototype.render = function () {
@@ -134,38 +139,9 @@ Game.prototype.updateCollidable = function (position) {
 }
 
 Game.prototype.onClick = function (event) {
-  this.player.isAlive ? this.player.jump() : this.restart(event);
+  this.player.isAlive ? this.player.jump() : null;
 }
 
-Game.prototype.restart = function (event) {
-
-  this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-  this.mouse.y = - (event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
-
-  this.raycaster.setFromCamera(this.mouse, this.camera);
-
-  let intersects = this.raycaster.intersectObjects([this.player.restartButton], false);
-
-  if (intersects[0] && intersects[0].object.userData.restart) {
-
-    intersects[0].object.userData.restart = false;
-    this.objectList.forEach(obj => this.scene.remove(obj.parent));
-    this.objectList = [];
-    this.scene.remove(intersects[0].object);
-
-    let countdown = document.createElement('div');
-    countdown.classList = 'countdown';
-    document.body.append(countdown);
-
-    this.scene.remove(this.player.playButton);
-
-    setTimeout(() => countdown.textContent = '3', 0);
-    setTimeout(() => countdown.textContent = '2', 1000);
-    setTimeout(() => countdown.textContent = '1', 2000);
-    setTimeout(() => this.player.reset(), 3000);
-
-  }
-}
 
 Game.prototype.onWindowResize = function () {
 

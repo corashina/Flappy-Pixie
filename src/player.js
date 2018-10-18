@@ -19,9 +19,7 @@ Player.prototype.constructor = function (scene) {
   )
   this.mesh.translateY(-HEIGHT * 2);
   this.mesh.translateZ(255);
-
-  // On first run add info about collectibles value
-  this.addInfoButton();
+  this.addRestartButton();
 
 }
 
@@ -56,6 +54,7 @@ Player.prototype.jump = function () {
 
 Player.prototype.checkCollision = function (objectList) {
 
+  this.objectList = objectList;
   // Find object closest to player
   let closest = objectList.reduce((accumulator, object) =>
     Math.abs(new THREE.Box3().setFromObject(object).min.x - this.mesh.position.x) < accumulator ?
@@ -104,16 +103,20 @@ Player.prototype.pickup = function (object, objectList) {
 
   // Remove mirrored pickups
   objectList.forEach(e => {
+
     if (e.userData.mirroredPickup == object.uuid) {
       let mirrored = objectList.filter(e => e.userData.mirroredPickup == object.uuid)[0];
+
       if (mirrored) {
         objectList = objectList.filter(e => e.uuid != mirrored.uuid);
         mirrored.parent.remove(mirrored);
       }
+
     }
+
   })
 
-  // Object parent might be removed when updating map
+  // Object parent might be removed during update
   if (object.parent) object.parent.remove(object);
   else this.scene.remove(object);
 
@@ -139,30 +142,30 @@ Player.prototype.hit = function () {
 
 Player.prototype.addRestartButton = function () {
 
-  let restartButton = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(128, 128, 1),
-    new THREE.MeshBasicMaterial({ transparent: true, map: Textures['playButton'] })
-  );
-
-  this.restartButton = restartButton;
-  this.restartButton.position.x = this.mesh.position.x;
-  this.restartButton.userData.restart = true;
-  this.scene.add(this.restartButton);
-  document.querySelector('.game-over').remove();
+  let restartButton = document.createElement('img');
+  restartButton.src = './assets/playButton.png';
+  restartButton.addEventListener('mousedown', (event) => {
+    this.restart();
+    restartButton.remove();
+  }, false);
+  document.body.appendChild(restartButton);
+  document.querySelector('.game-over') ? document.querySelector('.game-over').remove() : null;
 
 }
 
-Player.prototype.addInfoButton = function () {
+Player.prototype.restart = function () {
 
-  let restartButton = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(window.innerWidth < 768 ? window.innerWidth : WIDTH / 2, HEIGHT / 2, 1),
-    new THREE.MeshBasicMaterial({ transparent: true, map: Textures['points'] })
-  );
+  this.objectList.forEach(obj => this.scene.remove(obj.parent));
+  this.objectList = [];
 
-  this.restartButton = restartButton;
-  this.restartButton.position.x = this.mesh.position.x;
-  this.restartButton.userData.restart = true;
-  this.scene.add(this.restartButton);
+  let countdown = document.createElement('div');
+  countdown.classList = 'countdown';
+  document.body.append(countdown);
+
+  setTimeout(() => countdown.textContent = '3', 0);
+  setTimeout(() => countdown.textContent = '2', 1000);
+  setTimeout(() => countdown.textContent = '1', 2000);
+  setTimeout(() => this.reset(), 3000);
 
 }
 

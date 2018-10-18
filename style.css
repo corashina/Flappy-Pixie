@@ -28,6 +28,17 @@ canvas {
     top: 0;
 }
 
+img {
+    display: block;
+    position: absolute;
+    width: 25vw;
+    height: 25vw;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .score {
     position: absolute;
     font-size: 2em;
@@ -37,6 +48,22 @@ canvas {
 
 .highest {
     left: 2%;
+}
+
+.infoBtn {
+    position: absolute;
+    font-size: 2em;
+    top: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.info {
+    width: 40vh;
+    height: 40vh;
+    z-index: 2;
+    visibility: hidden;
 }
 
 .countdown {
