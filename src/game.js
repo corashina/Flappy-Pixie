@@ -134,13 +134,7 @@ Game.prototype.updateCollidable = function (position) {
 }
 
 Game.prototype.onClick = function (event) {
-  switch (event.which) {
-    case 0:
-    case 1:
-      this.player.isAlive ? this.player.jump() : this.restart(event);
-      break;
-  }
-
+  this.player.isAlive ? this.player.jump() : this.restart(event);
 }
 
 Game.prototype.restart = function (event) {
