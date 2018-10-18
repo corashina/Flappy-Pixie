@@ -194,7 +194,7 @@ Player.prototype.updateScore = function (score) {
 Player.prototype.updateHighestscore = function () {
 
   this.highestScore = this.score;
-  document.querySelector('.highest').textContent = `Highest: ${this.score}`;
+  document.querySelector('.highest').textContent = `Best: ${this.score}`;
 
 }
 

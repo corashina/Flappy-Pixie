@@ -79,7 +79,7 @@ Game.prototype.updateMap = function () {
 
     // Poor solution to check at which tile the player is
     // We check 3 conditions because player speed is 3 and window.innerWidth % 3 might vary
-    let tile = (position - 1) * window.innerWidth;
+    let tile = (position - 1) * WIDTH;
     if (this.player.mesh.position.x == tile ||
       this.player.mesh.position.x == tile + 1 ||
       this.player.mesh.position.x == tile - 1) this.updateCollidable(position);
