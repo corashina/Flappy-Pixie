@@ -160,7 +160,6 @@ Player.prototype.restart = function () {
     this.scene.remove(obj.parent);
     if (obj.parent) obj.parent.remove(this.scene.remove(obj))
   });
-  this.objectList = [];
 
   let countdown = document.createElement('div');
   countdown.classList = 'countdown';
@@ -186,7 +185,7 @@ Player.prototype.reset = function () {
   this.velocity.y = 0;
 
   this.updateScore(0);
-
+  this.objectList = [];
   document.querySelector('.countdown').remove();
 
 }
