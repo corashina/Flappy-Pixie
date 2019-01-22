@@ -10,3 +10,5 @@ All browsers except Opera mini.
  - Collision detection system
  - Parallax background
  - Countdown, restart button, highest score
+ 
+ ![alt text](https://raw.githubusercontent.com/Tomasz-Zielinski/Flappy-Pixie/master/assets/preview.png)
